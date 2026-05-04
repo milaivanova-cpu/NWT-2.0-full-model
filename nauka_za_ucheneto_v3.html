@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Науката за ученето</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f2eb;--cream:#fffdf6;--ink:#1c1a14;
+  --sand:#e8e2d5;--sand2:#d4ccb8;--muted:#6b6558;
+  --r:16px;--r-sm:10px;
+}
+html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink)}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+
+/* ── SCREENS ── */
+.screen{position:fixed;inset:0;overflow-y:auto;transition:opacity .28s ease,transform .28s ease}
+.screen.hidden{opacity:0;pointer-events:none;transform:translateY(8px)}
+
+/* ══════════════════════════════
+   POSTER
+══════════════════════════════ */
+#poster{display:flex;flex-direction:column;padding:22px 26px 14px;gap:14px}
+.poster-eye{font-size:.6rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.poster-h1{font-family:'DM Serif Display',serif;font-size:clamp(1.25rem,2.4vw,1.9rem);line-height:1.15;color:var(--ink)}
+.poster-h1 em{font-style:italic;color:#c95f3a}
+.poster-sub{font-size:.78rem;color:var(--muted);font-weight:300;margin-top:3px}
+
+.cols{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+.col-card{background:var(--cream);border:1.5px solid var(--sand);border-radius:var(--r);padding:16px 15px;cursor:pointer;transition:.18s;position:relative;overflow:hidden}
+.col-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px}
+.col-card:nth-child(1)::before{background:#534AB7}
+.col-card:nth-child(2)::before{background:#c95f3a}
+.col-card:nth-child(3)::before{background:#1a3a5c}
+.col-card:nth-child(4)::before{background:#2d6a4f}
+.col-card:hover{transform:translateY(-3px);box-shadow:0 6px 22px rgba(28,26,20,.1);border-color:var(--sand2)}
+.col-num{font-size:.58rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.col-q{font-family:'DM Serif Display',serif;font-size:1rem;font-style:italic;line-height:1.3;margin-bottom:10px}
+.col-card:nth-child(1) .col-q{color:#534AB7}
+.col-card:nth-child(2) .col-q{color:#c95f3a}
+.col-card:nth-child(3) .col-q{color:#1a3a5c}
+.col-card:nth-child(4) .col-q{color:#2d6a4f}
+.col-items{display:flex;flex-direction:column;gap:5px}
+.col-item{display:flex;align-items:flex-start;gap:6px;font-size:.76rem;line-height:1.5;color:var(--muted);font-weight:300}
+.col-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0;margin-top:6px}
+.col-hint{font-size:.65rem;color:var(--muted);margin-top:10px;opacity:.45;display:flex;align-items:center;gap:4px}
+
+.poster-footer{border-top:1px solid var(--sand);padding-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.flow-label{font-size:.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.pills{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.pill{font-size:.66rem;padding:3px 9px;border-radius:20px;border:1px solid var(--sand2);color:var(--muted)}
+.pill-arr{font-size:.78rem;color:var(--sand2)}
+
+/* ══════════════════════════════
+   DETAIL SCREEN
+══════════════════════════════ */
+#detail{background:var(--bg);display:flex;flex-direction:column}
+.detail-topbar{background:var(--cream);border-bottom:1.5px solid var(--sand);padding:12px 26px;display:flex;align-items:center;gap:12px;flex-shrink:0;position:sticky;top:0;z-index:10}
+.back-btn{display:flex;align-items:center;gap:5px;font-size:.78rem;font-weight:600;color:var(--muted);padding:5px 11px;border-radius:var(--r-sm);border:1.5px solid var(--sand2);transition:.15s}
+.back-btn:hover{border-color:var(--ink);color:var(--ink)}
+.topbar-title{font-family:'DM Serif Display',serif;font-size:.95rem;font-style:italic}
+.topbar-sep{flex:1}
+.topbar-num{font-size:.58rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+
+/* Two-column layout */
+.detail-body{display:grid;grid-template-columns:1fr 300px;flex:1;min-height:0;overflow:hidden}
+.detail-main{padding:20px 24px;overflow-y:auto;border-right:1.5px solid var(--sand)}
+.detail-side{display:flex;flex-direction:column;overflow:hidden;background:var(--cream)}
+
+/* Right panel */
+.side-placeholder{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;gap:10px}
+.side-placeholder-icon{width:40px;height:40px;border-radius:50%;border:1.5px dashed var(--sand2);display:flex;align-items:center;justify-content:center;color:var(--sand2);font-size:1.1rem}
+.side-placeholder p{font-size:.78rem;color:var(--muted);line-height:1.65;font-weight:300}
+.side-content{flex:1;overflow-y:auto;padding:20px;display:none;animation:fadeUp .2s ease}
+.side-content.vis{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.side-el-title{font-family:'DM Serif Display',serif;font-size:1.05rem;line-height:1.25;margin-bottom:4px}
+.side-close{font-size:.7rem;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:4px;margin-bottom:12px}
+.side-close:hover{color:var(--ink)}
+.side-section{margin-bottom:14px}
+.side-section-label{font-size:.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.side-section-body{font-size:.82rem;line-height:1.75;color:var(--ink);font-weight:300}
+.side-section-body strong{font-weight:600}
+.side-lit{margin-top:14px;border-top:1px solid var(--sand);padding-top:14px}
+.lit-ref{font-size:.75rem;font-weight:600;color:var(--ink);margin-bottom:2px}
+.lit-desc{font-size:.72rem;color:var(--muted);line-height:1.6;font-weight:300}
+.lit-item{margin-bottom:10px}
+
+/* viz */
+.viz-wrap{background:var(--bg);border-radius:var(--r);padding:14px;margin-bottom:16px;border:1.5px solid var(--sand)}
+.viz-label{font-size:.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+
+/* house */
+.house{display:flex;flex-direction:column}
+.house-outer{display:grid;grid-template-columns:28px 1fr 28px;gap:0}
+.house-roof{background:#534AB7;border-radius:var(--r) var(--r) 0 0;padding:10px 14px;text-align:center;cursor:pointer;transition:.15s;grid-column:1/4}
+.house-roof:hover{background:#4440a0}
+.house-roof-title{font-family:'DM Serif Display',serif;font-size:.9rem;color:#fff;font-style:italic}
+.house-roof-sub{font-size:.68rem;color:rgba(255,255,255,.6);margin-top:1px}
+.house-strat{writing-mode:vertical-rl;text-orientation:mixed;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:6px 4px;cursor:pointer;transition:.15s;border:1.5px solid}
+.house-strat-left{background:#eef3f9;border-color:#a8c4e0;color:#1a3a5c;border-right:none;border-top:none;border-radius:0}
+.house-strat-right{background:#edf5f1;border-color:#a8d5bf;color:#2d6a4f;border-left:none;border-top:none;border-radius:0}
+.house-strat:hover{opacity:.8}
+.house-middle{display:flex;flex-direction:column;border:1.5px solid #AFA9EC;border-top:none}
+.house-top{background:#EEEDFE;padding:10px 14px;cursor:pointer;transition:.15s;border-bottom:1px solid #d4d0f0}
+.house-top:hover{background:#e8e4fe}
+.house-top-label{font-size:.58rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#534AB7;margin-bottom:4px}
+.house-top-title{font-size:.84rem;font-weight:600;color:#26215C}
+.house-top-sub{font-size:.7rem;color:#534AB7;font-weight:300}
+.house-grids{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px;background:#f5f2eb}
+.house-mid-card{background:#fff;border-radius:var(--r-sm);padding:9px 11px;border:1px solid var(--sand);cursor:pointer;transition:.15s}
+.house-mid-card:hover{border-color:var(--sand2);background:#fffdf6}
+.house-mid-label{font-size:.58rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.house-mid-title{font-size:.78rem;font-weight:600;color:var(--ink);margin-bottom:1px}
+.house-mid-sub{font-size:.68rem;color:var(--muted);font-weight:300}
+.house-base-label{background:#1a3a5c;color:rgba(255,255,255,.7);font-size:.58rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;text-align:center;cursor:pointer;transition:.15s}
+.house-base-label:hover{background:#142d4a}
+.house-base{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:8px;background:#eef3f9;border:1.5px solid #a8c4e0;border-top:none}
+.house-base-card{background:#fff;border-radius:var(--r-sm);padding:8px 11px;border:1px solid #c8dff0;cursor:pointer;transition:.15s}
+.house-base-card:hover{border-color:#a8c4e0;background:#f8fbff}
+.bct{font-size:.78rem;font-weight:600;color:#1a3a5c;margin-bottom:1px}
+.bcs{font-size:.68rem;color:#4a6fa5;font-weight:300}
+.house-elevator{grid-column:1/4;display:flex;justify-content:center;gap:16px;padding:7px 14px;background:#fffbf0;border:1.5px solid #e8d8a0;border-top:none;border-radius:0 0 var(--r) var(--r)}
+.elevator-item{display:flex;align-items:center;gap:6px;font-size:.68rem;color:#633806;cursor:pointer;transition:.15s}
+.elevator-item:hover{color:#412402}
+.elevator-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+
+/* rings */
+.rings-svg{width:100%;height:230px}
+
+/* cog svg */
+.cog-svg-wrap svg{width:100%;height:auto}
+.map-el{transition:opacity .25s;cursor:pointer}
+.map-el.ctx-default{opacity:.42}
+.map-el.ctx-default:hover,.map-el:hover{opacity:1}
+@keyframes flowPulse{0%{stroke-dashoffset:24;opacity:.5}100%{stroke-dashoffset:0;opacity:.9}}
+@keyframes nodeAppear{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}
+@media(prefers-reduced-motion:no-preference){
+  .flow-line{animation:flowPulse 1.1s ease forwards}
+  .flow-node{animation:nodeAppear .45s ease forwards}
+}
+.flow-line{stroke-dasharray:8 0}
+.flow-node-1{animation-delay:.1s;opacity:0}.flow-node-2{animation-delay:.3s;opacity:0}
+.flow-node-3{animation-delay:.5s;opacity:0}.flow-node-4{animation-delay:.7s;opacity:0}
+.flow-node-5{animation-delay:.9s;opacity:0}
+.fl1{animation-delay:.2s}.fl2{animation-delay:.4s}.fl3{animation-delay:.6s}.fl4{animation-delay:.8s}
+
+/* domains */
+.domains-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.domain-card{border-radius:var(--r-sm);padding:11px 13px;border:1.5px solid;cursor:pointer;transition:.15s}
+.domain-card:hover{opacity:.85;transform:translateY(-1px)}
+.domain-letter{font-family:'DM Serif Display',serif;font-size:1.4rem;line-height:1;margin-bottom:3px}
+.domain-name{font-size:.8rem;font-weight:600;margin-bottom:6px}
+.domain-qs{display:flex;flex-direction:column;gap:3px}
+.domain-q{font-size:.68rem;line-height:1.5;font-weight:300;opacity:.8}
+
+/* insights */
+.insights-title{font-size:.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
+.insight{border-left:2px solid var(--sand2);padding:8px 0 8px 12px;margin-bottom:8px}
+.insight p{font-size:.82rem;line-height:1.75;font-weight:300}
+.insight p strong{font-weight:600}
+
+/* scrollbars */
+.detail-main::-webkit-scrollbar,.side-content::-webkit-scrollbar{width:3px}
+.detail-main::-webkit-scrollbar-thumb,.side-content::-webkit-scrollbar-thumb{background:var(--sand2);border-radius:2px}
+
+@media(max-width:860px){.cols{grid-template-columns:1fr 1fr}.detail-body{grid-template-columns:1fr}}
+@media(max-width:500px){.cols{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ══════ POSTER ══════ -->
+<div class="screen" id="poster">
+  <div>
+    <div class="poster-eye">Наука за ученето · Карта за учители</div>
+    <div class="poster-h1">Ученикът е изправен пред задача. <em>Ще се справи ли?</em></div>
+    <div class="poster-sub">Четири въпроса. Кликни върху всеки за детайли и втори слой информация.</div>
+  </div>
+  <div class="cols">
+    <div class="col-card" onclick="openDetail(1)">
+      <div class="col-num">Въпрос 1</div>
+      <div class="col-q">Накъде вървим?</div>
+      <div class="col-items">
+        <div class="col-item"><span class="col-dot" style="background:#534AB7"></span><span>Визия за успешния ученик</span></div>
+        <div class="col-item"><span class="col-dot" style="background:#534AB7"></span><span>Академични резултати и грамотности</span></div>
+        <div class="col-item"><span class="col-dot" style="background:#534AB7"></span><span>Условия за учене като основа</span></div>
+        <div class="col-item"><span class="col-dot" style="background:#534AB7"></span><span>Когн. и метакогн. стратегии</span></div>
+        <div class="col-item"><span class="col-dot" style="background:#EF9F27"></span><span>Самоефикасност — асансьор</span></div>
+      </div>
+      <div class="col-hint"><span>&#8594;</span> Кликни за детайли</div>
+    </div>
+    <div class="col-card" onclick="openDetail(2)">
+      <div class="col-num">Въпрос 2</div>
+      <div class="col-q">Кой е ученикът?</div>
+      <div class="col-items">
+        <div class="col-item"><span class="col-dot" style="background:#e8834a"></span><span>Тяло и внимание точно сега</span></div>
+        <div class="col-item"><span class="col-dot" style="background:#c95f3a"></span><span>Емоционален контекст от последния час</span></div>
+        <div class="col-item"><span class="col-dot" style="background:#7a6abf"></span><span>Качество на съня и домашна среда</span></div>
+        <div class="col-item"><span class="col-dot" style="background:#4a6fa5"></span><span>Натрупана самоефикасност и нагласи</span></div>
+        <div class="col-item"><span class="col-dot" style="background:#2d4a6e;opacity:.7"></span><span style="font-style:italic">При несигурност — всеки слой е по-натоварен</span></div>
+      </div>
+      <div class="col-hint"><span>&#8594;</span> Кликни за детайли</div>
+    </div>
+    <div class="col-card" onclick="openDetail(3)">
+      <div class="col-num">Въпрос 3</div>
+      <div class="col-q">Как се учи?</div>
+      <div class="col-items">
+        <div class="col-item"><span class="col-dot" style="background:#1a3a5c"></span><span>Вниманието е входната точка</span></div>
+        <div class="col-item"><span class="col-dot" style="background:#1a3a5c"></span><span>Работната памет е тясното гърло</span></div>
+        <div class="col-item"><span class="col-dot" style="background:#1a3a5c"></span><span>Запомняме онова, за което мислим</span></div>
+        <div class="col-item"><span class="col-dot" style="background:#1a3a5c"></span><span>Знанието е условие за мислене</span></div>
+        <div class="col-item"><span class="col-dot" style="background:#1a3a5c"></span><span>Практиката укрепва и освобождава</span></div>
+      </div>
+      <div class="col-hint"><span>&#8594;</span> Кликни за детайли</div>
+    </div>
+    <div class="col-card" onclick="openDetail(4)">
+      <div class="col-num">Въпрос 4</div>
+      <div class="col-q">Какво правя аз?</div>
+      <div class="col-items">
+        <div class="col-item"><span class="col-dot" style="background:#2d6a4f"></span><span>А: Взискателно преподаване</span></div>
+        <div class="col-item"><span class="col-dot" style="background:#2d6a4f"></span><span>Б: Подкрепяща среда</span></div>
+        <div class="col-item"><span class="col-dot" style="background:#2d6a4f"></span><span>В: Общностно лидерство</span></div>
+        <div class="col-item"><span class="col-dot" style="background:#2d6a4f"></span><span>Г: Вътрешно лидерство</span></div>
+      </div>
+      <div class="col-hint"><span>&#8594;</span> Кликни за детайли</div>
+    </div>
+  </div>
+  <div class="poster-footer">
+    <span class="flow-label">Логиката:</span>
+    <div class="pills">
+      <span class="pill">Знаем накъде</span><span class="pill-arr">&#8594;</span>
+      <span class="pill">Разбираме кого</span><span class="pill-arr">&#8594;</span>
+      <span class="pill">Разбираме как</span><span class="pill-arr">&#8594;</span>
+      <span class="pill">Действаме конкретно</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ DETAIL ══════ -->
+<div class="screen hidden" id="detail">
+  <div class="detail-topbar">
+    <button class="back-btn" onclick="closeDetail()"><span>&#8592;</span> Назад</button>
+    <div class="topbar-title" id="d-title"></div>
+    <div class="topbar-sep"></div>
+    <div class="topbar-num" id="d-num"></div>
+  </div>
+  <div class="detail-body">
+    <div class="detail-main" id="d-main"></div>
+    <div class="detail-side">
+      <div class="side-placeholder" id="side-placeholder">
+        <div class="side-placeholder-icon">&#8592;</div>
+        <p>Кликни върху елемент от визуализацията за повече детайли</p>
+      </div>
+      <div class="side-content" id="side-content"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════
+// ELEMENT DATA — second level
+// ══════════════════════════════
+const elements = {
+  // PANEL 1: HOUSE
+  'house-roof':{
+    title:'Визия за успешния ученик',
+    what:'Крайната цел на образованието — ученик, който вярва, че неговите действия имат значение и може да действа агентно в живота си.',
+    why:'Без ясна визия за крайния продукт, всички останали решения — какво преподаваме, как оценяваме, какво считаме за успех — остават без ориентир. Визията е компасът.',
+    mechanism:'Агентността (усещането "от мен зависи") е мотивационен механизъм с доказано влияние върху постиженията. Ученик с вътрешен локус на контрол се справя по-добре при трудност.',
+    lit:[{r:'Bandura, A. (1997). Self-Efficacy.',d:'Агентността и самоефикасността са ключови предиктори на академичното постижение и устойчивостта при трудност.'}]
+  },
+  'house-results':{
+    title:'Академични резултати',
+    what:'НВО, PISA мислене, приложимост на знанието — измеримият израз на всичко, което стои под тях в модела.',
+    why:'Резултатите не са целта сами по себе си — те са индикатор. Ако основата куца, покривът пада. Изкуственото надуване на резултати без реално учене е противоположното на визията.',
+    mechanism:'Академичните постижения са лаггинг индикатор — виждаме ги последни, след като всичко друго вече се е случило (или не). Това означава, че трябва да инвестираме нагоре по модела.',
+    lit:[{r:'Hattie, J. (2009). Visible Learning.',d:'Мета-анализ на над 800 изследвания показва кои фактори имат най-голям ефект върху академичните постижения.'}]
+  },
+  'house-reading':{
+    title:'Четивна грамотност в предмета',
+    what:'Способността да четеш и мислиш като представител на дадена дисциплина — историк, физик, математик, литератор.',
+    why:'Различните предмети имат различни начини за изграждане на знание, за задаване на въпроси и за оценяване на доказателства. Ученикът трябва да научи не само съдържанието, но и дисциплинарното мислене.',
+    mechanism:'Когато учениците четат исторически текст, те трябва да активират различни схеми от когато четат литературен текст. Без явно моделиране на тези процеси, те четат всичко по един и същ начин.',
+    lit:[{r:'Snow, C. (2002). Reading for Understanding.',d:'Дисциплинарната грамотност изисква явно преподаване на начина, по който знанието се конструира в различните предметни области.'}]
+  },
+  'house-base-gr':{
+    title:'Базова грамотност',
+    what:'Фундаменталните умения за четене — декодиране, разбиране на прочетеното, речников запас. Условието за всичко останало.',
+    why:'Ученик, който не може да чете плавно, изразходва цялата си работна памет за декодиране и не му остава за разбиране на смисъла. Базовата грамотност трябва да стане автоматична.',
+    mechanism:'Работната памет е ограничена. Когато декодирането е автоматизирано, тя е свободна за по-сложно разбиране. Ако не е — четенето е напрягане, не учене.',
+    lit:[{r:'Scarborough, H. (2001). Reading Rope.',d:'Моделът на въжето обяснява как различните компоненти на четенето се преплитат и укрепват взаимно до автоматизация.'}]
+  },
+  'house-safe':{
+    title:'Безопасно е да грешим и да питаме',
+    what:'Условие за учене, при което грешката е информация, а не провал. Учениците питат, рискуват и опитват без страх от присъда.',
+    why:'При активирана амигдала (режим "заплаха") префронталният кортекс работи по-слабо. Ученето е биологично ограничено. Психологическата безопасност не е мека — тя е неврологична предпоставка.',
+    mechanism:'Стресовите хормони (кортизол, адреналин) при ниска доза подобряват фокуса, но при висока — блокират работната памет и дългосрочното кодиране. Класна стая с висок страх от провал е класна стая с по-малко учене.',
+    lit:[{r:'Edmondson, A. (1999). Psychological Safety.',d:'Психологическата безопасност е условие за учене, иновация и ефективност в групи — изследвана първо в болници, после в класни стаи.'},{r:'Jensen, E. (2009). Teaching with Poverty in Mind.',d:'При хроничен стрес амигдалата е хронично активирана — безопасността в класната стая е особено критична за тези ученици.'}]
+  },
+  'house-belong':{
+    title:'Всички са приети като личности',
+    what:'Принадлежност — усещането, че си приет не само като ученик, но и като човек. Видимост и значимост за всеки.',
+    why:'Мозъкът обработва социалното изключване в същите региони, в които обработва физическата болка. Принадлежността не е "nice to have" — тя е биологична нужда.',
+    mechanism:'Усещането за принадлежност намалява когнитивния товар от социална тревожност и освобождава ресурс за учене. Ученици, които се чувстват невидими, инвестират мисловни ресурси в социално наблюдение, не в задачата.',
+    lit:[{r:'Walton & Cohen (2011). A Brief Social-Belonging Intervention.',d:'Краткосрочни интервенции за принадлежност имат дълготрайни ефекти върху академичните постижения, особено при маргинализирани групи.'}]
+  },
+  'house-together':{
+    title:'Учим се заедно и един от друг',
+    what:'Сътрудничество като норма, не като изключение. Знанието се изгражда и в социалното взаимодействие.',
+    why:'Обясняването на другите е един от най-силните механизми за укрепване на собственото разбиране. Когато учениците учат заедно, те са едновременно учещи и преподаващи.',
+    mechanism:'При обяснение на концепция на друг, ученикът трябва да реорганизира знанието си, да идентифицира пропуски и да го направи изрично. Това е активна когнитивна обработка — точно това, което укрепва паметта.',
+    lit:[{r:'Vygotsky, L. (1978). Mind in Society.',d:'Зоната на близкото развитие — ученето се случва в социалното взаимодействие с по-компетентен партньор или в съвместно решаване на проблеми.'}]
+  },
+  'house-regulate':{
+    title:'Регулираме себе си',
+    what:'Способността да управляваш емоции, усилия, мисли и поведение в контекста на учене. Метакогнитивен и емоционален контрол.',
+    why:'Саморегулацията предсказва академичните постижения по-добре от IQ в много изследвания. Ученик, който може да насочи и задържи вниманието, да се върне след отвличане, да управлява фрустрацията — учи по-ефективно.',
+    mechanism:'Саморегулацията изисква префронтален кортекс — същата структура, натоварена от стрес и умора. Затова практиката в спокойни условия изгражда капацитет, а изтощеният ученик губи регулация.',
+    lit:[{r:'Zimmerman, B. (2002). Becoming a Self-Regulated Learner.',d:'Саморегулацията може да се преподава явно — чрез цикли на поставяне на цели, мониторинг и рефлексия.'}]
+  },
+  'house-cog':{
+    title:'Когнитивни стратегии',
+    what:'Конкретни техники за обработка и запомняне на информация: извличане, разпределена практика, двойно кодиране, разработване, конкретни примери.',
+    why:'Повечето ученици учат по неефективни начини (четат отново, подчертават) не защото са мързеливи, а защото никой не им е показал по-добри. Когнитивните стратегии имат най-силна доказателствена подкрепа.',
+    mechanism:'Активното извличане (retrieval practice) укрепва паметта повече от повторното четене, защото принуждава мозъка да реконструира знанието — всеки път укрепвайки следата.',
+    lit:[{r:'Dunlosky et al. (2013). Improving Students\' Learning.',d:'Мета-анализ на 10 учебни стратегии: извличането и разпределената практика имат най-висока ефективност.'},{r:'Roediger & Karpicke (2006). The Power of Testing Memory.',d:'Тестовият ефект: извличането укрепва паметта значително повече от повторното четене.'}]
+  },
+  'house-meta':{
+    title:'Метакогнитивни стратегии',
+    what:'Мислене за собственото мислене — способността да наблюдаваш, оценяваш и регулираш собствения си процес на учене.',
+    why:'Ученик с развита метакогниция знае кога разбира и кога не, избира подходящи стратегии и адаптира подхода си. Без метакогниция учениците са "слепи" за собственото си разбиране.',
+    mechanism:'Илюзията за знание (fluency illusion) е честа — нещо изглежда познато, но не може да бъде изречено с думи. Метакогницията е способността да разграничаваш разпознаването от истинското разбиране.',
+    lit:[{r:'Flavell, J. (1979). Metacognition.',d:'Основополагащата статия, дефинираща метакогницията като знание и контрол върху собствените когнитивни процеси.'},{r:'Hattie & Timperley (2007). The Power of Feedback.',d:'Обратната връзка, насочена към метакогнитивния процес, има по-голям ефект от обратна връзка към задачата или личността.'}]
+  },
+  'house-elevator':{
+    title:'Самоефикасност — асансьорът',
+    what:'Вярата на ученика, че може да успее при конкретна задача. Различна от самочувствие — специфична за задача и контекст.',
+    why:'Самоефикасността определя дали ученикът ще опита, колко дълго ще продължи при трудност и дали ще използва стратегиите, които знае. Без нея знанието остава неизползвано.',
+    mechanism:'Самоефикасността се изгражда от четири източника: директен успех, наблюдение на сходни другите, вербално убеждаване и физиологично състояние. Учителят влияе на всичките четири.',
+    lit:[{r:'Bandura, A. (1997). Self-Efficacy: The Exercise of Control.',d:'Класическата теория за самоефикасността — механизмите на изграждане и влиянието върху поведението и постиженията.'}]
+  },
+  // PANEL 2: RINGS
+  'ring-1sec':{
+    title:'1 секунда преди',
+    what:'Моментното физиологично и когнитивно състояние: глад, жажда, болка, температура, шум, активирана амигдала от нещо, случило се секунди по-рано.',
+    why:'Работната памет е биологично ограничена. Физическият дискомфорт или емоционалното активиране консумира от този ограничен ресурс преди задачата дори да е започнала.',
+    mechanism:'Стресовите хормони активират амигдалата, която конкурира с префронталния кортекс за ресурс. При висока активация — рефлексивното мислене е потиснато в полза на реактивното.',
+    lit:[{r:'Sapolsky, R. (2017). Behave.',d:'Детайлно обяснение на как физиологичното и хормоналното състояние в момента оформят поведението и когнитивните способности.'}]
+  },
+  'ring-1min':{
+    title:'1 минута преди',
+    what:'Коридорът, предишният час, влизането в стаята. Конфликт с приятел, унижение от учител, новина от дома — всичко това е активно в работната памет при влизане.',
+    why:'Емоционалното завземане (emotional hijack) е реален когнитивен механизъм. Силна емоция доминира работната памет и оставя малко място за нова информация.',
+    mechanism:'Началото на часа е непропорционално важно — то е преходното пространство между предишния контекст и новия. Ритуалите за влизане не са загуба на учебно време, те са когнитивна настройка.',
+    lit:[{r:'Goleman, D. (1995). Emotional Intelligence.',d:'Концепцията за емоционален hijack — как интензивна емоция блокира рационалното мислене и вземането на решения.'}]
+  },
+  'ring-1hour':{
+    title:'1 час преди',
+    what:'Предишният час, натрупаната умора, нивото на когнитивно натоварване от сутринта. Петият час е различен от първия — буквално.',
+    why:'Когнитивната умора е реална. Всяко решение, всяко усилие за самоконтрол, всяко обяснение изчерпва ресурс. Работната памет не е безкрайна резервоар.',
+    mechanism:'Decision fatigue е добре документиран феномен — по-лошо вземане на решения след многократна употреба на самоконтрол. При деца ефектът е по-силен.',
+    lit:[{r:'Baumeister et al. (1998). Ego Depletion.',d:'Самоконтролът е ограничен ресурс — използването му в една задача намалява наличността за следваща.'}]
+  },
+  'ring-1day':{
+    title:'1 ден преди',
+    what:'Качеството на съня, домашната среда снощи, хранене, физическа активност. Всичко, което оформя с какво тялото и мозъкът идват сутринта.',
+    why:'Сънят е биологична предпоставка за учене — не опция. По-малко от 8 часа при тийнейджъри значи буквално по-малко налична работна памет и по-слабо кодиране в дългосрочната памет.',
+    mechanism:'По време на сън мозъкът консолидира дневните спомени — прехвърля ги от хипокампа в кората. Без достатъчен сън консолидацията е непълна. Това е физиологично, не поведенческо.',
+    lit:[{r:'Walker, M. (2017). Why We Sleep.',d:'Изчерпателен преглед на науката за съня и прякото му влияние върху ученето, паметта и когнитивното функциониране.'}]
+  },
+  'ring-1year':{
+    title:'1 година',
+    what:'Натрупаните навици за учене, нагласата за интелигентността (фиксирана или гъвкава), самоефикасността в конкретния предмет, отношението към учителя.',
+    why:'Нагласата определя как ученикът интерпретира трудността. При фиксирана нагласа трудността е знак за некомпетентност; при гъвкава — знак за необходимост от повече усилие.',
+    mechanism:'Нагласата се гради от хиляди малки преживявания на успех и провал, и от посланията на значимите възрастни за техния смисъл. Учителят е активен участник в изграждането й.',
+    lit:[{r:'Dweck, C. (2006). Mindset.',d:'Теорията за имплицитните нагласи за интелигентността и как те оформят реакцията към предизвикателство, грешка и обратна връзка.'}]
+  },
+  'ring-10years':{
+    title:'10 години',
+    what:'Ранното детство — езиков опит, качество на привързаността, токсичен стрес, достъп до богата среда. Буквално изградената неврологична архитектура.',
+    why:'Първите три години живот имат непропорционален ефект върху развитието на мозъка. Синаптичните връзки се формират с безпрецедентна скорост — и зависят от средата.',
+    mechanism:'Токсичният стрес в ранното детство физически изменя развитието на хипокампа (памет) и амигдалата (заплаха). Тези промени са реални, но не са необратими при правилна подкрепа.',
+    lit:[{r:'Jensen, E. (2009). Teaching with Poverty in Mind.',d:'Как хроничният стрес от бедност влияе на мозъчното развитие и какво могат учителите да направят с тази информация.'},{r:'Center on the Developing Child, Harvard University.',d:'Концепцията за serve-and-return взаимодействия и тяхното значение за изграждането на мозъчна архитектура.'}]
+  },
+  // PANEL 3: COGNITIVE MAP
+  'cog-student':{
+    title:'Ученикът среща задача',
+    what:'Отправната точка. Ученикът не е чист лист — идва с предишни знания, нагласи, емоционален контекст и физиологично състояние.',
+    why:'Всичко, което е в Панел 2 (слоевете) оформя с какво ученикът влиза в срещата със задачата. Когнитивният модел не работи изолирано от контекста.',
+    mechanism:'Предишните знания са най-силният предиктор на ново учене — не интелигентността. Мозъкът свързва новото с вече известното. Без тази основа информацията "лебди" без котва.',
+    lit:[{r:"Willingham, D. (2009). Why Don't Students Like School?",d:'Принципът: ние разбираме новото в контекста на вече известното. Предишното знание е условие за ново учене.'}]
+  },
+  'cog-attention':{
+    title:'Внимание',
+    what:'Филтърът между световния поток от стимули и ограничената работна памет. Информация, която не е забелязана, не достига до работната памет.',
+    why:'Вниманието е ограничен ресурс. Конкурентните стимули (телефон, разговор в класа, тревожна мисъл) са буквално по-малко работна памет за задачата.',
+    mechanism:'Внимание е различно от интерес. Нещо може да привлече вниманието, но да го насочи към нерелевантното. "Атрактивни" дейности, насочващи вниманието към декора, а не към учебното съдържание, са педагогически проблем.',
+    lit:[{r:'Kahneman, D. (2011). Thinking, Fast and Slow.',d:'Системата 1 (автоматична) и Системата 2 (аналитична) конкурират за ресурс. Вниманието е необходимо условие за активиране на Система 2.'}]
+  },
+  'cog-wm':{
+    title:'Работна памет',
+    what:'Когнитивното "работно пространство" — където се комбинира нова информация с извлечена от дългосрочната памет. Ограничена до ~4-7 елемента едновременно.',
+    why:'Работната памет е тясното гърло на ученето. Претоварена работна памет означава, че ученето спира — не мързел, не липса на мотивация, а когнитивен лимит.',
+    mechanism:'Три вида когнитивен товар: вътрешен (сложност на материала — може да се раздроби), излишен (лош дизайн — трябва да се елиминира) и полезен (усилието за разбиране — трябва да се насърчава). Само третият трябва да присъства.',
+    lit:[{r:'Sweller, J. (1988). Cognitive Load Theory.',d:'Теорията за когнитивния товар: дизайнът на обучение трябва да минимизира излишния товар и да насочва ресурса към полезното учене.'},{r:'Baddeley, A. (1986). Working Memory.',d:'Класическият модел на работната памет — многокомпонентна система с ограничен капацитет.'}]
+  },
+  'cog-ltm':{
+    title:'Дългосрочна памет',
+    what:'Практически неограниченото хранилище на знание, организирано в схеми. Целта на ученето — трайна промяна в дългосрочната памет.',
+    why:'Ако нищо не е променено в дългосрочната памет — нищо не е научено. "Разбра в часа" не е учене. Разбирането е само начало; консолидацията изисква практика и сън.',
+    mechanism:'Схемите в дългосрочната памет са ключови — те позволяват "chunking": групиране на информация в по-малко единици, което освобождава работна памет за по-сложно мислене. Това е механизмът на експертността.',
+    lit:[{r:"Willingham, D. (2009). Why Don't Students Like School?",d:'Паметта е следа от мисленето. Запомняме онова, за което сме мислили — не онова, което сме "видели".'},{r:'Roediger & Karpicke (2006). The Power of Testing Memory.',d:'Активното извличане укрепва дългосрочната памет значително повече от повторното четене.'}]
+  },
+  'cog-practice':{
+    title:'Упражняване',
+    what:'Целенасоченото и разпределено практикуване на знания и умения. Retrieval practice, spacing, interleaving — стратегиите с най-силна доказателствена подкрепа.',
+    why:'Паметта не е статична — тя се укрепва при активно извличане и отслабва без употреба. Упражняването не е повторение на наученото, а активна реконструкция, която укрепва следата.',
+    mechanism:'Spacing effect: разпределената практика (малко всеки ден) е по-ефективна от масираната (всичко наведнъж) поради забравяне между сесиите — всяко извличане при леко забравяне укрепва повече.',
+    lit:[{r:'Dunlosky et al. (2013). Improving Students\' Learning.',d:'Мета-анализ: retrieval practice и spacing имат най-висока ефективност сред проучените стратегии.'},{r:'Rosenshine, B. (2012). Principles of Instruction.',d:'Принципи 5 и 6: ежедневно преговаряне и многократна практика до автоматизация.'}]
+  },
+  'cog-forgetting':{
+    title:'Забравяне',
+    what:'Активен биологичен механизъм — мозъкът изтрива информация, която не се използва. Не е провал; е условието, което прави retrieval practice толкова ефективен.',
+    why:'Забравянето не трябва да се избягва — то трябва да се използва. Извличане при леко забравяне укрепва паметта повече от извличане без забравяне. Именно затова spacing работи.',
+    mechanism:'Кривата на забравяне на Ебингхаус показва, че загубата е бърза в началото и се забавя. Стратегическото повтаряне точно преди да се случи забравяне максимизира ефективността.',
+    lit:[{r:'Ebbinghaus, H. (1885). Memory: A Contribution to Experimental Psychology.',d:'Оригиналното изследване на кривата на забравяне — основата за разбиране защо spacing работи.'},{r:'Bjork, R. (1994). Memory and Metamemory.',d:'Концепцията за "desirable difficulties" — трудностите при учене, които изглеждат пречки, но реално укрепват паметта.'}]
+  },
+  'cog-env-task':{
+    title:'Задачата',
+    what:'Видът знание (декларативно, процедурно, условно), нивото на трудност, яснотата на инструкциите и когнитивното търсене, което задачата поставя.',
+    why:'Задачата определя за какво ще мислят учениците — а паметта е следа от мисленето. Лошо проектирана задача може да бъде изпълнена без никакво реално учене.',
+    mechanism:'"Cognitively activating tasks" — задачи, изискващи анализ, синтез, оценка, трансфер — водят до по-дълбоко обработване и по-трайно запомняне от задачи на ниво разпознаване и възпроизвеждане.',
+    lit:[{r:"Willingham, D. (2009). Why Don't Students Like School?",d:'Принцип 1: уважавай когнитивните граници. Задачата трябва да е постижима, но предизвикателна.'},{r:'Bloom, B. (1956). Taxonomy of Educational Objectives.',d:'Таксономията на Блум — рамка за разграничаване на задачи по ниво на когнитивно търсене.'}]
+  },
+  'cog-teacher':{
+    title:'Учителят',
+    what:'Проектантът на условията — избира задачата, управлява вниманието, дозира когнитивния товар, дава обратна връзка, планира практиката.',
+    why:'Учителят е сред факторите с най-голямо влияние върху постиженията на учениците. Но механизмът не е "вдъхновение" — той е систематичен дизайн на когнитивни условия.',
+    mechanism:'Ефективният учител работи с когнитивния модел: насочва вниманието към правилното, дозира товара на работната памет, активира предишното знание, планира разпределена практика.',
+    lit:[{r:'Hattie, J. (2009). Visible Learning.',d:'Учителят е сред топ факторите по ефект върху постиженията — по-важен от класния размер, финансирането и много програмни интервенции.'},{r:'Rosenshine, B. (2012). Principles of Instruction.',d:'10 принципа на ефективното преподаване, синтезирани от изследвания на когнитивна наука и учителска практика.'}]
+  },
+  // PANEL 4: DOMAINS
+  'domain-A':{
+    title:'Домейн А: Взискателно преподаване',
+    what:'Четири практики: ясна цел с критерии за успех, когнитивно активиращи задачи, формиращо оценяване навреме, осмисляне от учениците с техни думи.',
+    why:'Взискателното преподаване е когнитивната наука в действие. Всяка от четирите практики работи директно с механизмите на работната памет, вниманието и дългосрочната памет.',
+    mechanism:'Ясна цел намалява излишния когнитивен товар. Когнитивно активиращата задача насочва мисленето към правилното. ОВ навреме подкрепя извличането. Осмислянето с думи е активна обработка.',
+    lit:[{r:'Rosenshine, B. (2012). Principles of Instruction.',d:'Принципи 1-3: начало с преговор, представяне на малки стъпки, задаване на много въпроси за разбиране.'},{r:'Black & Wiliam (1998). Inside the Black Box.',d:'Формиращото оценяване е сред факторите с най-голям ефект върху постиженията — ако е систематично и свързано с промяна на преподаването.'}]
+  },
+  'domain-B':{
+    title:'Домейн Б: Подкрепяща среда',
+    what:'Четири практики: ясни рутини и безопасност, глас и избор на учениците, позитивни взаимоотношения, приобщаване и диференциране.',
+    why:'Подкрепящата среда е предпоставка за Домейн А. Взискателното преподаване работи само при базова психологическа безопасност и принадлежност.',
+    mechanism:'Средата оформя когнитивния контекст. Класна стая с непредвидими норми консумира работна памет за социален мониторинг. Ясните рутини автоматизират очакванията и освобождават ресурс за учене.',
+    lit:[{r:'Maslow, A. (1943). A Theory of Human Motivation.',d:'Йерархията на нуждите: безопасността е предпоставка за по-висшите нужди, включително учене и себеактуализация.'},{r:'Walton & Cohen (2011). Social Belonging.',d:'Принадлежността има измерими ефекти върху академичните постижения, особено при маргинализирани групи.'}]
+  },
+  'domain-C':{
+    title:'Домейн В: Общностно лидерство',
+    what:'Три практики: сътрудничество с колеги, ангажираност със заинтересовани страни, изследване на проблемите.',
+    why:'Ефективното преподаване не се случва в изолация. Учителите в подкрепяща колегиална среда продължават да се развиват след началните години; тези в изолация — спират.',
+    mechanism:'Колегиалното учене работи по същите принципи като ученическото: активно обработване, обратна връзка, рефлексия. Учителят е ученик на своята практика.',
+    lit:[{r:'Kraft & Papay (2014). Professional Environments.',d:'Качеството на професионалната среда предсказва продължаващото развитие на учителите след първите 5 години.'},{r:'Hargreaves & Fullan (2012). Professional Capital.',d:'Социалният капитал (връзките с колеги) е толкова важен за учителското развитие, колкото и индивидуалните умения.'}]
+  },
+  'domain-D':{
+    title:'Домейн Г: Вътрешно лидерство',
+    what:'Три практики: ясни цели с измерители, проактивна рефлексия и търсене на обратна връзка, грижа за благосъстоянието и саморегулацията.',
+    why:'Учителят, който не се развива и не се грижи за себе си, не може да поддържа Домейни А и Б системно. Благосъстоянието не е луксозно — то е условие за ефективност.',
+    mechanism:'Целенасочената практика (deliberate practice) изисква рефлексия, специфичен фокус и обратна връзка. Без тях опитът акумулира, но не води до подобрение — "20 години опит или 1 година опит х 20".',
+    lit:[{r:'Ericsson et al. (1993). The Role of Deliberate Practice.',d:'Экспертността изисква целенасочена практика с фокус, обратна връзка и постепенно нарастване на трудността — не просто time on task.'},{r:'Maslach & Leiter (1997). The Truth About Burnout.',d:'Бърнаутът не е слабост — той е системен проблем с измерими когнитивни и поведенчески последствия за учителите и учениците им.'}]
+  }
+};
+
+// ══════════════════════════════
+// PANEL CONTENT
+// ══════════════════════════════
+const panels = {
+  1:{
+    num:'Въпрос 1 от 4', title:'Накъде вървим?', color:'#534AB7',
+    insights:[
+      {t:`<strong>Условията за учене не са "меки" — те са когнитивни.</strong> Безопасността не е хубав бонус. При активирана амигдала ученето е биологично ограничено.`},
+      {t:`<strong>Самоефикасността е асансьор.</strong> Пресича всички нива. Ученик, който не вярва, че може, не използва стратегиите дори когато ги знае.`},
+      {t:`<strong>Грамотностите са два различни потока.</strong> Базовата грамотност и четивната в предмета изискват различен дизайн на преподаването.`},
+      {t:`<strong>Когнитивните и метакогнитивните стратегии</strong> са умения, не черти — могат и трябва да се преподават явно.`},
+    ],
+    viz:`<div class="viz-wrap">
+      <div class="viz-label">Визия за успешния ученик — кликни върху всеки елемент</div>
+      <div class="house">
+        <div class="house-outer">
+          <div class="house-roof" onclick="showElement('house-roof')" style="grid-column:1/4">
+            <div class="house-roof-title">Визия за успешния ученик</div>
+            <div class="house-roof-sub">"От мен зависи" — агентност и смисъл</div>
+          </div>
+          <div class="house-strat house-strat-left" onclick="showElement('house-cog')">Когн. стратегии</div>
+          <div class="house-middle">
+            <div class="house-top" onclick="showElement('house-results')">
+              <div class="house-top-label">Академични резултати</div>
+              <div class="house-top-title">НВО · PISA мислене · приложимост</div>
+              <div class="house-top-sub">Измеримият израз на всичко под него</div>
+            </div>
+            <div class="house-grids">
+              <div class="house-mid-card" onclick="showElement('house-reading')">
+                <div class="house-mid-label">Четивна грамотност в предмета</div>
+                <div class="house-mid-title">Четене за да се учи</div>
+                <div class="house-mid-sub">Мисля като историк, физик...</div>
+              </div>
+              <div class="house-mid-card" onclick="showElement('house-base-gr')">
+                <div class="house-mid-label">Базова грамотност</div>
+                <div class="house-mid-title">Учене за да се чете</div>
+                <div class="house-mid-sub">Декодиране, разбиране, речник</div>
+              </div>
+            </div>
+            <div class="house-base-label" onclick="showElement('house-safe')">УСЛОВИЯ ЗА УЧЕНЕ — основата, без която нищо не стои</div>
+            <div class="house-base">
+              <div class="house-base-card" onclick="showElement('house-safe')"><div class="bct">Безопасно е да грешим</div><div class="bcs">Грешката е информация, не провал</div></div>
+              <div class="house-base-card" onclick="showElement('house-belong')"><div class="bct">Всички са приети</div><div class="bcs">Принадлежност — не само като ученици</div></div>
+              <div class="house-base-card" onclick="showElement('house-together')"><div class="bct">Учим се заедно</div><div class="bcs">Сътрудничество, не конкуренция</div></div>
+              <div class="house-base-card" onclick="showElement('house-regulate')"><div class="bct">Регулираме себе си</div><div class="bcs">Емоции, усилия, мисли, поведение</div></div>
+            </div>
+          </div>
+          <div class="house-strat house-strat-right" onclick="showElement('house-meta')">Метакогн. стратегии</div>
+        </div>
+        <div class="house-elevator" onclick="showElement('house-elevator')">
+          <div class="elevator-item"><span class="elevator-dot" style="background:#EF9F27"></span>Самоефикасност — асансьорът &#8593;</div>
+        </div>
+      </div>
+    </div>`
+  },
+  2:{
+    num:'Въпрос 2 от 4', title:'Кой е ученикът?', color:'#c95f3a',
+    insights:[
+      {t:`<strong>Ученикът не е чист лист.</strong> Идва с история — предишни знания, емоционални асоциации, вяра или неверие в себе си.`},
+      {t:`<strong>Тялото е когнитивно условие.</strong> Гладен, уморен или стресиран ученик разполага с по-малко работна памет.`},
+      {t:`<strong>При хронична несигурност</strong> базовото когнитивно натоварване е постоянно по-високо. Мозъкът е зает с предвиждане на заплахи.`},
+      {t:`<strong>Близките слоеве са най-достъпни за учителя</strong> — не можеш да промениш ранното детство, но можеш да знаеш, че съществува.`},
+    ],
+    viz:`<div class="viz-wrap">
+      <div class="viz-label">Времеви слоеве — кликни върху всеки слой</div>
+      <svg class="rings-svg" viewBox="0 0 480 240">
+        <defs>
+          <radialGradient id="rg2" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#c95f3a" stop-opacity=".07"/>
+            <stop offset="100%" stop-color="#1a2e40" stop-opacity=".02"/>
+          </radialGradient>
+          <marker id="ta2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="#d4ccb8" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <ellipse cx="220" cy="116" rx="210" ry="110" fill="url(#rg2)"/>
+        <!-- rings clickable -->
+        <ellipse cx="220" cy="116" rx="210" ry="110" fill="transparent" stroke="#1a2e40" stroke-width="9" opacity=".12" style="cursor:pointer" onclick="showElement('ring-10years')"/>
+        <ellipse cx="220" cy="116" rx="172" ry="90" fill="transparent" stroke="#2d4a6e" stroke-width="9" opacity=".18" style="cursor:pointer" onclick="showElement('ring-10years')"/>
+        <ellipse cx="220" cy="116" rx="172" ry="90" fill="none" stroke="#2d4a6e" stroke-width="1" opacity=".35"/>
+        <ellipse cx="220" cy="116" rx="135" ry="71" fill="transparent" stroke="#4a6fa5" stroke-width="11" opacity=".18" style="cursor:pointer" onclick="showElement('ring-1year')"/>
+        <ellipse cx="220" cy="116" rx="135" ry="71" fill="none" stroke="#4a6fa5" stroke-width="1.2" opacity=".45"/>
+        <ellipse cx="220" cy="116" rx="98" ry="52" fill="transparent" stroke="#7a6abf" stroke-width="11" opacity=".18" style="cursor:pointer" onclick="showElement('ring-1day')"/>
+        <ellipse cx="220" cy="116" rx="98" ry="52" fill="none" stroke="#7a6abf" stroke-width="1.4" opacity=".55"/>
+        <ellipse cx="220" cy="116" rx="63" ry="34" fill="transparent" stroke="#c95f3a" stroke-width="11" opacity=".18" style="cursor:pointer" onclick="showElement('ring-1hour')"/>
+        <ellipse cx="220" cy="116" rx="63" ry="34" fill="none" stroke="#c95f3a" stroke-width="1.6" opacity=".68"/>
+        <ellipse cx="220" cy="116" rx="33" ry="18" fill="transparent" stroke="#e8834a" stroke-width="11" opacity=".2" style="cursor:pointer" onclick="showElement('ring-1min')"/>
+        <ellipse cx="220" cy="116" rx="33" ry="18" fill="none" stroke="#e8834a" stroke-width="2" opacity=".82"/>
+        <!-- center -->
+        <ellipse cx="220" cy="116" rx="14" ry="8" fill="#1c1a14" stroke="white" stroke-width="1.5" opacity=".9" style="cursor:pointer" onclick="showElement('ring-1sec')"/>
+        <text font-family="'DM Sans',sans-serif" font-size="7" fill="white" text-anchor="middle" x="220" y="118" opacity=".9">ученик</text>
+        <!-- labels -->
+        <text font-family="'DM Serif Display',serif" font-style="italic" font-size="9.5" fill="#e8834a" x="256" y="104" style="cursor:pointer" onclick="showElement('ring-1sec')">1 сек.</text>
+        <text font-family="'DM Serif Display',serif" font-style="italic" font-size="9.5" fill="#c95f3a" x="285" y="91" style="cursor:pointer" onclick="showElement('ring-1min')">1 мин.</text>
+        <text font-family="'DM Serif Display',serif" font-style="italic" font-size="9.5" fill="#7a6abf" x="320" y="79" style="cursor:pointer" onclick="showElement('ring-1hour')">1 час</text>
+        <text font-family="'DM Serif Display',serif" font-style="italic" font-size="9.5" fill="#4a6fa5" x="356" y="67" style="cursor:pointer" onclick="showElement('ring-1day')">1 ден</text>
+        <text font-family="'DM Serif Display',serif" font-style="italic" font-size="9.5" fill="#2d4a6e" x="390" y="55" style="cursor:pointer" onclick="showElement('ring-1year')">1 год.</text>
+        <text font-family="'DM Serif Display',serif" font-style="italic" font-size="9.5" fill="#1a2e40" x="416" y="43" style="cursor:pointer" onclick="showElement('ring-10years')">10 год.</text>
+        <!-- time axis -->
+        <line x1="255" y1="178" x2="438" y2="178" stroke="#d4ccb8" stroke-width=".8" marker-end="url(#ta2)"/>
+        <text font-family="'DM Sans',sans-serif" font-size="7.5" fill="#6b6558" x="255" y="190" letter-spacing="1" font-weight="600">СЕГА</text>
+        <text font-family="'DM Sans',sans-serif" font-size="7.5" fill="#6b6558" x="390" y="190" letter-spacing="1" font-weight="600">МИНАЛО</text>
+        <!-- jensen note -->
+        <rect x="10" y="192" width="200" height="24" rx="6" fill="#fdf0ee" stroke="#e8b8b3" stroke-width=".8"/>
+        <text font-family="'DM Sans',sans-serif" font-size="8" fill="#6b2020" x="20" y="202" font-weight="500">При несигурност/бедност:</text>
+        <text font-family="'DM Sans',sans-serif" font-size="7.5" fill="#8b3030" x="20" y="212">всеки слой носи повече товар</text>
+      </svg>
+    </div>`
+  },
+  3:{
+    num:'Въпрос 3 от 4', title:'Как се учи?', color:'#1a3a5c',
+    insights:[
+      {t:`<strong>Учене = трайна промяна в дългосрочната памет.</strong> Ако нищо не е променено там — нищо не е научено.`},
+      {t:`<strong>Паметта е следа от мисленето.</strong> Не запомняме онова, което сме "видели", а онова, върху което сме насочили мисловен ресурс.`},
+      {t:`<strong>Работната памет е тясното гърло.</strong> Претоварена работна памет означава, че ученето спира — не мързел, а когнитивен лимит.`},
+      {t:`<strong>Знанието е условие за мислене.</strong> Критичното мислене не работи в "празно". Уменията и знанието не са на различни писти.`},
+    ],
+    viz:`<div class="viz-wrap">
+      <div class="viz-label">Когнитивен модел — кликни върху всеки елемент</div>
+      <div class="cog-svg-wrap">
+      <svg width="100%" viewBox="0 0 620 540">
+      <defs>
+        <marker id="af" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#534AB7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker>
+        <marker id="ac" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#9FE1CB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+        <marker id="al" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#3C3489" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+        <marker id="afg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#E24B4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+      </defs>
+      <rect x="14" y="14" width="592" height="510" rx="16" fill="none" stroke="#D3D1C7" stroke-width=".5" stroke-dasharray="4 3"/>
+      <text x="28" y="28" font-size="9" fill="#B4B2A9" font-family="'DM Sans',sans-serif" font-weight="600" letter-spacing=".08em">ВЪНШНА СРЕДА</text>
+      <!-- env top -->
+      <g class="map-el ctx-default" onclick="showElement('cog-env-task')" style="cursor:pointer"><rect x="24" y="32" width="90" height="34" rx="7" fill="#F1EFE8" stroke="#D3D1C7" stroke-width=".5"/><text x="69" y="46" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="500" fill="#5F5E5A" font-family="'DM Sans',sans-serif">Физ. среда</text><text x="69" y="58" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#888780" font-family="'DM Sans',sans-serif">шум · ред</text></g>
+      <g class="map-el ctx-default" onclick="showElement('cog-env-task')" style="cursor:pointer"><rect x="124" y="32" width="90" height="34" rx="7" fill="#F1EFE8" stroke="#D3D1C7" stroke-width=".5"/><text x="169" y="46" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="500" fill="#5F5E5A" font-family="'DM Sans',sans-serif">Соц. среда</text><text x="169" y="58" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#888780" font-family="'DM Sans',sans-serif">норми · групи</text></g>
+      <g class="map-el ctx-default" onclick="showElement('cog-env-task')" style="cursor:pointer"><rect x="224" y="32" width="90" height="34" rx="7" fill="#FEF6E8" stroke="#EF9F27" stroke-width=".7"/><text x="269" y="46" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="500" fill="#633806" font-family="'DM Sans',sans-serif">Задачата</text><text x="269" y="58" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#BA7517" font-family="'DM Sans',sans-serif">вид · трудност</text></g>
+      <g class="map-el ctx-default" onclick="showElement('cog-teacher')" style="cursor:pointer"><rect x="324" y="32" width="90" height="34" rx="7" fill="#FDF0EB" stroke="#D85A30" stroke-width=".7"/><text x="369" y="46" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="500" fill="#712B13" font-family="'DM Sans',sans-serif">Учителят</text><text x="369" y="58" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#993C1D" font-family="'DM Sans',sans-serif">дизайн · ОВ</text></g>
+      <g class="map-el ctx-default" onclick="showElement('cog-teacher')" style="cursor:pointer"><rect x="424" y="32" width="90" height="34" rx="7" fill="#F1EFE8" stroke="#D3D1C7" stroke-width=".5"/><text x="469" y="46" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="500" fill="#5F5E5A" font-family="'DM Sans',sans-serif">Семейство</text><text x="469" y="58" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#888780" font-family="'DM Sans',sans-serif">опит · очакв.</text></g>
+      <!-- inner context -->
+      <rect x="30" y="80" width="556" height="354" rx="12" fill="none" stroke="#C0E8D8" stroke-width=".5" stroke-dasharray="3 3"/>
+      <text x="44" y="93" font-size="9" fill="#5DCAA5" font-family="'DM Sans',sans-serif" font-weight="600" letter-spacing=".08em">ВЪТРЕШЕН КОНТЕКСТ</text>
+      <!-- inner ctx -->
+      <g class="map-el ctx-default" onclick="showElement('ring-1sec')" style="cursor:pointer"><rect x="40" y="100" width="96" height="32" rx="7" fill="#EDF9F4" stroke="#9FE1CB" stroke-width=".5"/><text x="88" y="114" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="500" fill="#0F6E56" font-family="'DM Sans',sans-serif">Безопасност</text><text x="88" y="126" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#1D9E75" font-family="'DM Sans',sans-serif">спокоен/стресиран</text></g>
+      <g class="map-el ctx-default" onclick="showElement('ring-1year')" style="cursor:pointer"><rect x="40" y="142" width="96" height="32" rx="7" fill="#EDF9F4" stroke="#9FE1CB" stroke-width=".5"/><text x="88" y="156" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="500" fill="#0F6E56" font-family="'DM Sans',sans-serif">Самоефик.</text><text x="88" y="168" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#1D9E75" font-family="'DM Sans',sans-serif">вярва/не вярва</text></g>
+      <g class="map-el ctx-default" onclick="showElement('cog-student')" style="cursor:pointer"><rect x="40" y="184" width="96" height="32" rx="7" fill="#EDF9F4" stroke="#9FE1CB" stroke-width=".5"/><text x="88" y="198" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="500" fill="#0F6E56" font-family="'DM Sans',sans-serif">Пред. знания</text><text x="88" y="210" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#1D9E75" font-family="'DM Sans',sans-serif">схеми/пропуски</text></g>
+      <g class="map-el ctx-default" onclick="showElement('ring-1sec')" style="cursor:pointer"><rect x="40" y="226" width="96" height="32" rx="7" fill="#EDF9F4" stroke="#9FE1CB" stroke-width=".5"/><text x="88" y="240" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="500" fill="#0F6E56" font-family="'DM Sans',sans-serif">Физ. състояние</text><text x="88" y="252" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#1D9E75" font-family="'DM Sans',sans-serif">уморен/отпочинал</text></g>
+      <g class="map-el ctx-default" onclick="showElement('ring-1min')" style="cursor:pointer"><rect x="40" y="268" width="96" height="32" rx="7" fill="#EDF9F4" stroke="#9FE1CB" stroke-width=".5"/><text x="88" y="282" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="500" fill="#0F6E56" font-family="'DM Sans',sans-serif">Смисъл</text><text x="88" y="294" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#1D9E75" font-family="'DM Sans',sans-serif">защо си струва</text></g>
+      <!-- ctx arrows -->
+      <line class="map-el ctx-default" x1="136" y1="116" x2="220" y2="184" stroke="#9FE1CB" stroke-width=".6" stroke-dasharray="2 2" marker-end="url(#ac)"/>
+      <line class="map-el ctx-default" x1="136" y1="158" x2="220" y2="191" stroke="#9FE1CB" stroke-width=".6" stroke-dasharray="2 2" marker-end="url(#ac)"/>
+      <line class="map-el ctx-default" x1="136" y1="200" x2="220" y2="197" stroke="#9FE1CB" stroke-width=".6" stroke-dasharray="2 2" marker-end="url(#ac)"/>
+      <line class="map-el ctx-default" x1="136" y1="242" x2="220" y2="203" stroke="#9FE1CB" stroke-width=".6" stroke-dasharray="2 2" marker-end="url(#ac)"/>
+      <line class="map-el ctx-default" x1="136" y1="284" x2="220" y2="210" stroke="#9FE1CB" stroke-width=".6" stroke-dasharray="2 2" marker-end="url(#ac)"/>
+      <!-- env arrows -->
+      <line class="map-el ctx-default" x1="269" y1="66" x2="269" y2="148" stroke="#D4A84B" stroke-width=".8" stroke-dasharray="3 2" marker-end="url(#ac)"/>
+      <path class="map-el ctx-default" d="M369 66 Q369 124 330 162" fill="none" stroke="#D85A30" stroke-width=".8" stroke-dasharray="3 2" marker-end="url(#ac)"/>
+      <!-- STUDENT -->
+      <g class="flow-node flow-node-1" onclick="showElement('cog-student')" style="cursor:pointer">
+        <circle cx="268" cy="196" r="32" fill="#EEEDFE" stroke="#7F77DD" stroke-width="2"/>
+        <circle cx="268" cy="183" r="10" fill="#AFA9EC" stroke="#7F77DD" stroke-width="1"/>
+        <path d="M247 210 Q248 201 268 199 Q288 201 289 210" fill="#EEEDFE" stroke="#7F77DD" stroke-width="1" stroke-linejoin="round"/>
+        <circle cx="264" cy="182" r="1.6" fill="#26215C"/><circle cx="272" cy="182" r="1.6" fill="#26215C"/>
+        <path d="M264 188 Q268 191 272 188" fill="none" stroke="#26215C" stroke-width="1.2" stroke-linecap="round"/>
+        <text x="268" y="233" text-anchor="middle" dominant-baseline="central" font-size="11" font-weight="500" fill="#26215C" font-family="'DM Sans',sans-serif">Ученикът</text>
+        <text x="268" y="246" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#7F77DD" font-family="'DM Sans',sans-serif">среща задача</text>
+      </g>
+      <!-- Student -> Attention -->
+      <line class="flow-line fl1" x1="298" y1="188" x2="356" y2="166" stroke="#534AB7" stroke-width="2.5" marker-end="url(#af)"/>
+      <!-- Attention -->
+      <g class="flow-node flow-node-2" onclick="showElement('cog-attention')" style="cursor:pointer">
+        <rect x="358" y="144" width="108" height="42" rx="9" fill="#EEEDFE" stroke="#534AB7" stroke-width="2"/>
+        <text x="412" y="162" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#26215C" font-family="'DM Sans',sans-serif">Внимание</text>
+        <text x="412" y="176" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#534AB7" font-family="'DM Sans',sans-serif">филтър · входна точка</text>
+      </g>
+      <!-- Att -> WM -->
+      <line class="flow-line fl2" x1="466" y1="164" x2="490" y2="212" stroke="#534AB7" stroke-width="2.5" marker-end="url(#af)"/>
+      <!-- WM -->
+      <g class="flow-node flow-node-3" onclick="showElement('cog-wm')" style="cursor:pointer">
+        <rect x="450" y="214" width="122" height="46" rx="9" fill="#EEEDFE" stroke="#3C3489" stroke-width="2.5"/>
+        <text x="511" y="234" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#26215C" font-family="'DM Sans',sans-serif">Работна памет</text>
+        <text x="511" y="249" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#3C3489" font-family="'DM Sans',sans-serif">4–7 елемента · товар</text>
+      </g>
+      <!-- WM -> LTM -->
+      <line class="flow-line fl3" x1="482" y1="260" x2="454" y2="302" stroke="#3C3489" stroke-width="2.5" marker-end="url(#af)"/>
+      <!-- LTM back -->
+      <path class="map-el ctx-default" d="M508 302 Q550 268 512 260" fill="none" stroke="#3C3489" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#al)"/>
+      <text class="map-el ctx-default" x="554" y="276" text-anchor="middle" font-size="8" fill="#3C3489" font-family="'DM Sans',sans-serif">схемите</text>
+      <text class="map-el ctx-default" x="554" y="286" text-anchor="middle" font-size="8" fill="#3C3489" font-family="'DM Sans',sans-serif">освобождават</text>
+      <!-- LTM -->
+      <g class="flow-node flow-node-4" onclick="showElement('cog-ltm')" style="cursor:pointer">
+        <rect x="376" y="304" width="122" height="46" rx="9" fill="#EEEDFE" stroke="#26215C" stroke-width="2.5"/>
+        <text x="437" y="324" text-anchor="middle" dominant-baseline="central" font-size="11.5" font-weight="500" fill="#26215C" font-family="'DM Sans',sans-serif">Дългосрочна памет</text>
+        <text x="437" y="338" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#3C3489" font-family="'DM Sans',sans-serif">схеми · трайна промяна</text>
+      </g>
+      <!-- LTM -> Practice -->
+      <line class="flow-line fl4" x1="376" y1="336" x2="346" y2="360" stroke="#26215C" stroke-width="2" marker-end="url(#af)"/>
+      <!-- Practice -->
+      <g class="flow-node flow-node-5" onclick="showElement('cog-practice')" style="cursor:pointer">
+        <rect x="178" y="360" width="156" height="42" rx="9" fill="#FAEEDA" stroke="#BA7517" stroke-width="2"/>
+        <text x="256" y="378" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#412402" font-family="'DM Sans',sans-serif">Упражняване</text>
+        <text x="256" y="392" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#854F0B" font-family="'DM Sans',sans-serif">retrieval · spacing · редуване</text>
+      </g>
+      <!-- Forgetting -->
+      <g class="map-el ctx-default" onclick="showElement('cog-forgetting')" style="cursor:pointer">
+        <rect x="178" y="414" width="156" height="34" rx="8" fill="#FCEBEB" stroke="#E24B4A" stroke-width=".8"/>
+        <text x="256" y="429" text-anchor="middle" dominant-baseline="central" font-size="11" font-weight="500" fill="#501313" font-family="'DM Sans',sans-serif">Забравяне</text>
+        <text x="256" y="441" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#A32D2D" font-family="'DM Sans',sans-serif">механизъм, не провал</text>
+      </g>
+      <path class="map-el ctx-default" d="M178 431 Q142 431 142 381 Q142 344 178 366" fill="none" stroke="#E24B4A" stroke-width="1" stroke-dasharray="3 2" marker-end="url(#afg)"/>
+      <text class="map-el ctx-default" x="128" y="383" text-anchor="middle" font-size="8" fill="#A32D2D" font-family="'DM Sans',sans-serif">затова</text>
+      <text class="map-el ctx-default" x="128" y="393" text-anchor="middle" font-size="8" fill="#A32D2D" font-family="'DM Sans',sans-serif">практиката</text>
+      <!-- legend -->
+      <rect x="22" y="468" width="572" height="40" rx="9" fill="none" stroke="#D3D1C7" stroke-width=".5"/>
+      <rect x="36" y="482" width="7" height="7" rx="2" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.5"/>
+      <text x="49" y="487" font-size="9.5" fill="#444441" font-family="'DM Sans',sans-serif" dominant-baseline="central">Когнитивен поток</text>
+      <rect x="170" y="482" width="7" height="7" rx="2" fill="#EDF9F4" stroke="#9FE1CB" stroke-width=".5"/>
+      <text x="183" y="487" font-size="9.5" fill="#888780" font-family="'DM Sans',sans-serif" dominant-baseline="central">Вътрешен контекст</text>
+      <rect x="322" y="482" width="7" height="7" rx="2" fill="#FDF0EB" stroke="#D85A30" stroke-width=".8"/>
+      <text x="335" y="487" font-size="9.5" fill="#888780" font-family="'DM Sans',sans-serif" dominant-baseline="central">Учителят</text>
+      <rect x="418" y="482" width="7" height="7" rx="2" fill="#FCEBEB" stroke="#E24B4A" stroke-width=".8"/>
+      <text x="431" y="487" font-size="9.5" fill="#888780" font-family="'DM Sans',sans-serif" dominant-baseline="central">Забравяне</text>
+      <text x="36" y="500" font-size="8.5" fill="#B4B2A9" font-family="'DM Sans',sans-serif">Кликни върху елемент за детайли &#8594;</text>
+      </svg>
+      </div>
+    </div>`
+  },
+  4:{
+    num:'Въпрос 4 от 4', title:'Какво правя аз?', color:'#2d6a4f',
+    insights:[
+      {t:`<strong>Домейн А е когнитивната наука в действие.</strong> Ясна цел намалява излишния товар; когнитивното активиране насочва мисленето; ОВ подкрепя извличането.`},
+      {t:`<strong>Домейн Б е предпоставката.</strong> При активирана амигдала ученето е биологично ограничено. Средата е когнитивен въпрос.`},
+      {t:`<strong>Домейни В и Г са за дългия хоризонт.</strong> Учителят, който не се развива, не може да поддържа А и Б системно.`},
+      {t:`<strong>Ефективността на учителя</strong> е сред факторите с най-голямо влияние върху постиженията — по-голямо от разликата между добро и лошо училище.`},
+    ],
+    viz:`<div class="viz-wrap">
+      <div class="viz-label">Четири домейна — кликни върху всеки за детайли</div>
+      <div class="domains-grid">
+        <div class="domain-card" style="background:#edf5f1;border-color:#a8d5bf" onclick="showElement('domain-A')">
+          <div class="domain-letter" style="color:#2d6a4f">А</div>
+          <div class="domain-name" style="color:#2d6a4f">Взискателно преподаване</div>
+          <div class="domain-qs">
+            <div class="domain-q" style="color:#064e3b">Знаят ли учениците какво трябва да могат?</div>
+            <div class="domain-q" style="color:#064e3b">Изискват ли задачите реално мислене?</div>
+            <div class="domain-q" style="color:#064e3b">Проверявам ли разбирането навреме?</div>
+            <div class="domain-q" style="color:#064e3b">Формулират ли учениците изводи сами?</div>
+          </div>
+        </div>
+        <div class="domain-card" style="background:#eef3f9;border-color:#a8c4e0" onclick="showElement('domain-B')">
+          <div class="domain-letter" style="color:#1a3a5c">Б</div>
+          <div class="domain-name" style="color:#1a3a5c">Подкрепяща среда</div>
+          <div class="domain-qs">
+            <div class="domain-q" style="color:#0c447c">Знаят ли учениците какво се очаква?</div>
+            <div class="domain-q" style="color:#0c447c">Имат ли реален избор в ученето?</div>
+            <div class="domain-q" style="color:#0c447c">Чувства ли се всеки видян и значим?</div>
+            <div class="domain-q" style="color:#0c447c">Работи ли всеки на оптимално предизвикателство?</div>
+          </div>
+        </div>
+        <div class="domain-card" style="background:#fdf8ec;border-color:#e8d8a0" onclick="showElement('domain-C')">
+          <div class="domain-letter" style="color:#b8860b">В</div>
+          <div class="domain-name" style="color:#b8860b">Общностно лидерство</div>
+          <div class="domain-qs">
+            <div class="domain-q" style="color:#633806">Допринасям ли за общността на колеги?</div>
+            <div class="domain-q" style="color:#633806">Има ли работата ми въздействие извън класа?</div>
+            <div class="domain-q" style="color:#633806">Задълбочавам ли разбирането за проблемите?</div>
+          </div>
+        </div>
+        <div class="domain-card" style="background:#fdf0ee;border-color:#e8b8b3" onclick="showElement('domain-D')">
+          <div class="domain-letter" style="color:#c0392b">Г</div>
+          <div class="domain-name" style="color:#c0392b">Вътрешно лидерство</div>
+          <div class="domain-qs">
+            <div class="domain-q" style="color:#6b2020">Имам ли ясна цел и проследявам напредъка?</div>
+            <div class="domain-q" style="color:#6b2020">Търся ли обратна връзка и правя нещо с нея?</div>
+            <div class="domain-q" style="color:#6b2020">Грижа ли се за себе си преди изтощение?</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:9px;font-size:.7rem;color:var(--muted);font-style:italic;line-height:1.6">А и Б кореспондират директно с когнитивния модел. В и Г са за дългия хоризонт на развитие.</div>
+    </div>`
+  }
+};
+
+// ══════════════════════════════
+// FUNCTIONS
+// ══════════════════════════════
+function openDetail(n){
+  const p = panels[n];
+  document.getElementById('d-title').textContent = p.title;
+  document.getElementById('d-title').style.color = p.color;
+  document.getElementById('d-num').textContent = p.num;
+  document.getElementById('d-main').innerHTML =
+    p.viz +
+    `<div class="insights-title">Ключови разбирания</div>` +
+    p.insights.map(i=>`<div class="insight"><p>${i.t}</p></div>`).join('');
+  // reset side
+  document.getElementById('side-placeholder').style.display='flex';
+  document.getElementById('side-content').classList.remove('vis');
+  document.getElementById('side-content').innerHTML='';
+  document.getElementById('poster').classList.add('hidden');
+  document.getElementById('detail').classList.remove('hidden');
+  document.getElementById('d-main').scrollTop=0;
+}
+
+function closeDetail(){
+  document.getElementById('detail').classList.add('hidden');
+  document.getElementById('poster').classList.remove('hidden');
+}
+
+function showElement(id){
+  const el = elements[id];
+  if(!el) return;
+  document.getElementById('side-placeholder').style.display='none';
+  const sc = document.getElementById('side-content');
+  sc.classList.remove('vis');
+  void sc.offsetWidth; // reflow for animation
+  sc.innerHTML = `
+    <div class="side-close" onclick="closeSide()">&#8592; Затвори</div>
+    <div class="side-el-title">${el.title}</div>
+    <div class="side-section">
+      <div class="side-section-label">Какво е това</div>
+      <div class="side-section-body">${el.what}</div>
+    </div>
+    <div class="side-section">
+      <div class="side-section-label">Защо е важно</div>
+      <div class="side-section-body">${el.why}</div>
+    </div>
+    <div class="side-section">
+      <div class="side-section-label">Механизъм</div>
+      <div class="side-section-body">${el.mechanism}</div>
+    </div>
+    <div class="side-lit">
+      <div class="side-section-label">Литература</div>
+      ${el.lit.map(l=>`<div class="lit-item"><div class="lit-ref">${l.r}</div><div class="lit-desc">${l.d}</div></div>`).join('')}
+    </div>`;
+  sc.classList.add('vis');
+  sc.scrollTop=0;
+}
+
+function closeSide(){
+  document.getElementById('side-content').classList.remove('vis');
+  document.getElementById('side-placeholder').style.display='flex';
+}
+</script>
+</body>
+</html>

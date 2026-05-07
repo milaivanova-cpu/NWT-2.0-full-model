@@ -220,10 +220,9 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
       <div class="col-num">Учител · Въпрос 4</div>
       <div class="col-q">Какво правя аз?</div>
       <div class="col-items">
-        <div class="col-item"><span class="col-dot" style="background:#2d6a4f"></span><span>А: Взискателно преподаване</span></div>
-        <div class="col-item"><span class="col-dot" style="background:#2d6a4f"></span><span>Б: Подкрепяща среда</span></div>
-        <div class="col-item"><span class="col-dot" style="background:#2d6a4f"></span><span>В: Общностно лидерство</span></div>
-        <div class="col-item"><span class="col-dot" style="background:#2d6a4f"></span><span>Г: Вътрешно лидерство</span></div>
+        <div class="col-item"><span class="col-dot" style="background:#2d6a4f"></span><span>Лидерство в час (А + Б)</span></div>
+        <div class="col-item"><span class="col-dot" style="background:#b8860b"></span><span>Лидерство в общността</span></div>
+        <div class="col-item"><span class="col-dot" style="background:#c0392b"></span><span>Лидерство в нас</span></div>
       </div>
       <div class="col-hint"><span>&#8594;</span> Кликни за детайли</div>
     </div>
@@ -457,19 +456,26 @@ const elements = {
     mechanism:'Средата оформя когнитивния контекст. Класна стая с непредвидими норми консумира работна памет за социален мониторинг. Ясните рутини автоматизират очакванията и освобождават ресурс за учене.',
     lit:[{r:'Maslow, A. (1943). A Theory of Human Motivation.',d:'Йерархията на нуждите: безопасността е предпоставка за по-висшите нужди, включително учене и себеактуализация.'},{r:'Walton & Cohen (2011). Social Belonging.',d:'Принадлежността има измерими ефекти върху академичните постижения, особено при маргинализирани групи.'}]
   },
+  'domain-AB':{
+    title:'Лидерство в час',
+    what:'Двата домейна, които се случват директно в класната стая: взискателното преподаване (А) и подкрепящата среда (Б). Те са неделими — единият без другия не работи.',
+    why:'Взискателното преподаване без безопасна среда води до блокиране. Подкрепяща среда без взискателност е приятна, но не учи. Двата домейна са две страни на едно и също нещо.',
+    mechanism:'А работи директно с когнитивния модел: ясна цел намалява излишния товар, задачата насочва мисленето, ОВ укрепва извличането. Б е предпоставката: при активирана амигдала работната памет е блокирана.',
+    lit:[{r:'Rosenshine, B. (2012). Principles of Instruction.',d:'Систематичното преподаване с ясни цели, моделиране и проверка на разбирането има най-силна доказателствена подкрепа.'},{r:'Edmondson, A. (1999). Psychological Safety.',d:'Психологическата безопасност е условие за учене, риск и иновация в групи.'}]
+  },
   'domain-C':{
-    title:'Домейн В: Общностно лидерство',
-    what:'Три практики: сътрудничество с колеги, ангажираност със заинтересовани страни, изследване на проблемите.',
-    why:'Ефективното преподаване не се случва в изолация. Учителите в подкрепяща колегиална среда продължават да се развиват след началните години; тези в изолация — спират.',
+    title:'Лидерство в общността',
+    what:'Работата на учителя отвъд класната стая — с колеги, родители, общност и по-широката мисия на образованието.',
+    why:'Учителите в подкрепяща колегиална среда продължават да се развиват след началните години; тези в изолация — спират. Ефективността не е само индивидуален въпрос.',
     mechanism:'Колегиалното учене работи по същите принципи като ученическото: активно обработване, обратна връзка, рефлексия. Учителят е ученик на своята практика.',
     lit:[{r:'Kraft & Papay (2014). Professional Environments.',d:'Качеството на професионалната среда предсказва продължаващото развитие на учителите след първите 5 години.'},{r:'Hargreaves & Fullan (2012). Professional Capital.',d:'Социалният капитал (връзките с колеги) е толкова важен за учителското развитие, колкото и индивидуалните умения.'}]
   },
   'domain-D':{
-    title:'Домейн Г: Вътрешно лидерство',
-    what:'Три практики: ясни цели с измерители, проактивна рефлексия и търсене на обратна връзка, грижа за благосъстоянието и саморегулацията.',
-    why:'Учителят, който не се развива и не се грижи за себе си, не може да поддържа Домейни А и Б системно. Благосъстоянието не е луксозно — то е условие за ефективност.',
-    mechanism:'Целенасочената практика (deliberate practice) изисква рефлексия, специфичен фокус и обратна връзка. Без тях опитът акумулира, но не води до подобрение — "20 години опит или 1 година опит х 20".',
-    lit:[{r:'Ericsson et al. (1993). The Role of Deliberate Practice.',d:'Экспертността изисква целенасочена практика с фокус, обратна връзка и постепенно нарастване на трудността — не просто time on task.'},{r:'Maslach & Leiter (1997). The Truth About Burnout.',d:'Бърнаутът не е слабост — той е системен проблем с измерими когнитивни и поведенчески последствия за учителите и учениците им.'}]
+    title:'Лидерство в нас',
+    what:'Целите, рефлексията, търсенето на обратна връзка и грижата за собственото благосъстояние. Учителят като ученик на своята практика.',
+    why:'Учителят, който не се развива и не се грижи за себе си, не може да поддържа Лидерство в час системно. Благосъстоянието не е луксозно — то е условие за ефективност.',
+    mechanism:'Целенасочената практика (deliberate practice) изисква рефлексия, специфичен фокус и обратна връзка. Без тях опитът акумулира, но не води до подобрение.',
+    lit:[{r:'Fuller, F. (1969). Concerns of Teachers.',d:'Начинаещите учители минават от self-concerns към task-concerns към impact-concerns. Разбирането на тази последователност е ключово за подкрепата им.'},{r:'Ericsson et al. (1993). The Role of Deliberate Practice.',d:'Експертността изисква целенасочена практика с фокус и обратна връзка — не просто натрупан опит.'},{r:'Maslach & Leiter (1997). The Truth About Burnout.',d:'Бърнаутът не е слабост — той е системен проблем с измерими последствия за учителите и учениците им.'}]
   }
 };
 
@@ -700,54 +706,61 @@ const panels = {
   4:{
     num:'Учител · Въпрос 4 от 4', title:'Какво правя аз?', color:'#2d6a4f',
     insights:[
-      {t:`<strong>Домейн А е когнитивната наука в действие.</strong> Ясна цел намалява излишния товар; когнитивното активиране насочва мисленето; ОВ подкрепя извличането.`},
-      {t:`<strong>Домейн Б е предпоставката.</strong> При активирана амигдала ученето е биологично ограничено. Средата е когнитивен въпрос.`},
-      {t:`<strong>Домейни В и Г са за дългия хоризонт.</strong> Учителят, който не се развива, не може да поддържа А и Б системно.`},
-      {t:`<strong>Ефективността на учителя</strong> е сред факторите с най-голямо влияние върху постиженията — по-голямо от разликата между добро и лошо училище.`},
+      {t:`<strong>Начинаещият учител минава през предсказуема последователност.</strong> Първо: ще оцелея ли? После: мога ли да управлявам класа? Едва накрая: учат ли учениците? Това не е слабост — вниманието е заето с оцеляване. Затова моделът е построен "фундаменти първо".`},
+      {t:`<strong>Лидерството в час е когнитивната наука в действие.</strong> Ясна цел намалява излишния товар; взискателната задача насочва мисленето; подкрепящата среда е предпоставка — при активирана амигдала ученето е биологично ограничено.`},
+      {t:`<strong>Лидерството в общността не е добавка.</strong> Учителите в подкрепяща колегиална среда продължават да се развиват след началните години; тези в изолация — спират.`},
+      {t:`<strong>Ефективността на учителя</strong> е сред факторите с най-голямо влияние върху постиженията на учениците — по-голямо от разликата между добро и лошо училище.`},
     ],
     viz:`<div class="viz-wrap">
-      <div class="viz-label">Четири домейна — кликни върху всеки за детайли</div>
-      <div class="domains-grid">
-        <div class="domain-card" style="background:#edf5f1;border-color:#a8d5bf" onclick="showElement('domain-A')">
-          <div class="domain-letter" style="color:#2d6a4f">А</div>
-          <div class="domain-name" style="color:#2d6a4f">Взискателно преподаване</div>
-          <div class="domain-qs">
-            <div class="domain-q" style="color:#064e3b">Знаят ли учениците какво трябва да могат?</div>
-            <div class="domain-q" style="color:#064e3b">Изискват ли задачите реално мислене?</div>
-            <div class="domain-q" style="color:#064e3b">Проверявам ли разбирането навреме?</div>
-            <div class="domain-q" style="color:#064e3b">Формулират ли учениците изводи сами?</div>
+      <div class="viz-label">Три домейна — кликни върху всеки за детайли</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <!-- В ЧАС: А + Б обединени -->
+        <div style="border:1.5px solid #a8d5bf;border-radius:12px;overflow:hidden;cursor:pointer" onclick="showElement('domain-AB')">
+          <div style="background:#2d6a4f;padding:7px 14px;display:flex;align-items:center;justify-content:space-between">
+            <span style="font-family:'DM Serif Display',serif;font-size:.95rem;color:#fff;font-style:italic">Лидерство в час</span>
+            <span style="font-size:.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.6)">А + Б</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0">
+            <div style="background:#edf5f1;padding:12px 14px;border-right:1px solid #c8e8d8">
+              <div style="font-size:.75rem;font-weight:600;color:#2d6a4f;margin-bottom:5px">А · Взискателно преподаване</div>
+              <div style="font-size:.68rem;color:#064e3b;line-height:1.55;opacity:.85">Знаят ли учениците накъде вървим?</div>
+              <div style="font-size:.68rem;color:#064e3b;line-height:1.55;opacity:.85">Изискват ли задачите реално мислене?</div>
+              <div style="font-size:.68rem;color:#064e3b;line-height:1.55;opacity:.85">Проверявам ли разбирането навреме?</div>
+              <div style="font-size:.68rem;color:#064e3b;line-height:1.55;opacity:.85">Формулират ли учениците изводи сами?</div>
+            </div>
+            <div style="background:#eef3f9;padding:12px 14px">
+              <div style="font-size:.75rem;font-weight:600;color:#1a3a5c;margin-bottom:5px">Б · Подкрепяща среда</div>
+              <div style="font-size:.68rem;color:#0c447c;line-height:1.55;opacity:.85">Знаят ли учениците какво се очаква?</div>
+              <div style="font-size:.68rem;color:#0c447c;line-height:1.55;opacity:.85">Имат ли реален избор в ученето?</div>
+              <div style="font-size:.68rem;color:#0c447c;line-height:1.55;opacity:.85">Чувства ли се всеки видян и значим?</div>
+              <div style="font-size:.68rem;color:#0c447c;line-height:1.55;opacity:.85">Работи ли всеки на оптимално предизвикателство?</div>
+            </div>
           </div>
         </div>
-        <div class="domain-card" style="background:#eef3f9;border-color:#a8c4e0" onclick="showElement('domain-B')">
-          <div class="domain-letter" style="color:#1a3a5c">Б</div>
-          <div class="domain-name" style="color:#1a3a5c">Подкрепяща среда</div>
-          <div class="domain-qs">
-            <div class="domain-q" style="color:#0c447c">Знаят ли учениците какво се очаква?</div>
-            <div class="domain-q" style="color:#0c447c">Имат ли реален избор в ученето?</div>
-            <div class="domain-q" style="color:#0c447c">Чувства ли се всеки видян и значим?</div>
-            <div class="domain-q" style="color:#0c447c">Работи ли всеки на оптимално предизвикателство?</div>
+        <!-- В ОБЩНОСТТА -->
+        <div style="border:1.5px solid #e8d8a0;border-radius:12px;overflow:hidden;cursor:pointer" onclick="showElement('domain-C')">
+          <div style="background:#b8860b;padding:7px 14px">
+            <span style="font-family:'DM Serif Display',serif;font-size:.95rem;color:#fff;font-style:italic">Лидерство в общността</span>
+          </div>
+          <div style="background:#fdf8ec;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+            <div style="font-size:.68rem;color:#633806;line-height:1.55;opacity:.85">Допринасям ли за общността на колеги?</div>
+            <div style="font-size:.68rem;color:#633806;line-height:1.55;opacity:.85">Има ли работата ми въздействие извън класа?</div>
+            <div style="font-size:.68rem;color:#633806;line-height:1.55;opacity:.85">Задълбочавам ли разбирането за проблемите?</div>
           </div>
         </div>
-        <div class="domain-card" style="background:#fdf8ec;border-color:#e8d8a0" onclick="showElement('domain-C')">
-          <div class="domain-letter" style="color:#b8860b">В</div>
-          <div class="domain-name" style="color:#b8860b">Общностно лидерство</div>
-          <div class="domain-qs">
-            <div class="domain-q" style="color:#633806">Допринасям ли за общността на колеги?</div>
-            <div class="domain-q" style="color:#633806">Има ли работата ми въздействие извън класа?</div>
-            <div class="domain-q" style="color:#633806">Задълбочавам ли разбирането за проблемите?</div>
+        <!-- В НАС -->
+        <div style="border:1.5px solid #e8b8b3;border-radius:12px;overflow:hidden;cursor:pointer" onclick="showElement('domain-D')">
+          <div style="background:#c0392b;padding:7px 14px">
+            <span style="font-family:'DM Serif Display',serif;font-size:.95rem;color:#fff;font-style:italic">Лидерство в нас</span>
           </div>
-        </div>
-        <div class="domain-card" style="background:#fdf0ee;border-color:#e8b8b3" onclick="showElement('domain-D')">
-          <div class="domain-letter" style="color:#c0392b">Г</div>
-          <div class="domain-name" style="color:#c0392b">Вътрешно лидерство</div>
-          <div class="domain-qs">
-            <div class="domain-q" style="color:#6b2020">Имам ли ясна цел и проследявам напредъка?</div>
-            <div class="domain-q" style="color:#6b2020">Търся ли обратна връзка и правя нещо с нея?</div>
-            <div class="domain-q" style="color:#6b2020">Грижа ли се за себе си преди изтощение?</div>
+          <div style="background:#fdf0ee;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+            <div style="font-size:.68rem;color:#6b2020;line-height:1.55;opacity:.85">Имам ли ясна цел и проследявам напредъка?</div>
+            <div style="font-size:.68rem;color:#6b2020;line-height:1.55;opacity:.85">Търся ли обратна връзка и правя нещо с нея?</div>
+            <div style="font-size:.68rem;color:#6b2020;line-height:1.55;opacity:.85">Грижа ли се за себе си преди изтощение?</div>
           </div>
         </div>
       </div>
-      <div style="margin-top:9px;font-size:.7rem;color:var(--muted);font-style:italic;line-height:1.6">А и Б кореспондират директно с когнитивния модел. В и Г са за дългия хоризонт на развитие.</div>
+      <div style="margin-top:9px;font-size:.7rem;color:var(--muted);font-style:italic;line-height:1.6">В час → В общността → В нас. Трите домейна се развиват едновременно, но началото е в часа.</div>
     </div>`
   }
 };
